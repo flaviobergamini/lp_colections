@@ -1,7 +1,7 @@
 # Imagem única para o Render: Next.js (frontend) + FastAPI/CLIP (backend),
 # orquestrados pelo supervisord dentro do mesmo container.
 
-FROM node:20-slim
+FROM node:22-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
@@ -19,6 +19,9 @@ COPY backend/requirements.txt ./backend/requirements.txt
 RUN pip3 install --no-cache-dir --break-system-packages -r backend/requirements.txt
 
 COPY backend/app ./backend/app
+
+# Baixa os pesos do CLIP no build: o startup não depende de rede e fica bem mais rápido.
+RUN cd backend && python3 -c "from app.infrastructure.clip_image_embedder import ClipImageEmbedder; ClipImageEmbedder()"
 
 # --- Frontend Next.js ---
 COPY frontend/package.json frontend/package-lock.json* ./frontend/

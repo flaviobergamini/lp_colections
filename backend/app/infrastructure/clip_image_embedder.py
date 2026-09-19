@@ -1,3 +1,4 @@
+import gc
 import io
 
 import open_clip
@@ -19,8 +20,11 @@ class ClipImageEmbedder:
         model, _, preprocess = open_clip.create_model_and_transforms(
             model_name, pretrained=pretrained
         )
-        model.eval()
-        self._model = model
+        # Só a torre de imagem é usada (não há busca por texto). Descartar o resto
+        # do CLIP corta centenas de MB de RAM, importante em instâncias pequenas.
+        self._visual = model.visual.eval()
+        del model
+        gc.collect()
         self._preprocess = preprocess
 
     def embed(self, image_bytes: bytes) -> list[float]:
@@ -30,8 +34,8 @@ class ClipImageEmbedder:
             raise InvalidImageError("Não foi possível ler a imagem.") from exc
 
         tensor = self._preprocess(image).unsqueeze(0)
-        with torch.no_grad():
-            features = self._model.encode_image(tensor)
+        with torch.inference_mode():
+            features = self._visual(tensor)
             features = features / features.norm(dim=-1, keepdim=True)
 
         return features.squeeze(0).tolist()
