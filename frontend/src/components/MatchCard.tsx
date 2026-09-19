@@ -2,6 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Card from "@mui/material/Card";
+import CardActionArea from "@mui/material/CardActionArea";
+import CardMedia from "@mui/material/CardMedia";
+import CardContent from "@mui/material/CardContent";
+import Box from "@mui/material/Box";
+import Chip from "@mui/material/Chip";
+import Typography from "@mui/material/Typography";
+import AlbumIcon from "@mui/icons-material/Album";
 import { useAppContainer } from "@/infrastructure/container";
 import type { RecordMatch } from "@/domain/entities/record";
 
@@ -23,23 +31,25 @@ export default function MatchCard({ match }: { match: RecordMatch }) {
   const percent = Math.round(match.similarity * 100);
 
   return (
-    <Link
-      href={`/record/${match.id}`}
-      className="flex items-center gap-3 rounded-xl bg-vinyl-surface p-3 hover:bg-white/5"
-    >
-      <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-black">
-        {coverUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={coverUrl} alt={match.title} className="h-full w-full object-cover" />
+    <Card>
+      <CardActionArea component={Link} href={`/record/${match.id}`} sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
+        {coverUrl ? (
+          <CardMedia component="img" image={coverUrl} alt={match.title} sx={{ width: 72, height: 72, flexShrink: 0 }} />
+        ) : (
+          <Box sx={{ width: 72, height: 72, flexShrink: 0, bgcolor: "black", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <AlbumIcon color="disabled" />
+          </Box>
         )}
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="truncate font-medium text-gray-100">{match.title}</p>
-        <p className="truncate text-sm text-gray-400">{match.artist}</p>
-      </div>
-      <span className="shrink-0 rounded-full bg-black/40 px-2 py-1 text-xs text-vinyl-accent">
-        {percent}%
-      </span>
-    </Link>
+        <CardContent sx={{ minWidth: 0, flex: 1 }}>
+          <Typography noWrap sx={{ fontWeight: 500 }}>
+            {match.title}
+          </Typography>
+          <Typography noWrap variant="body2" color="text.secondary">
+            {match.artist}
+          </Typography>
+        </CardContent>
+        <Chip label={`${percent}%`} color="primary" variant="outlined" size="small" sx={{ mr: 2 }} />
+      </CardActionArea>
+    </Card>
   );
 }

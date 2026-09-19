@@ -2,6 +2,18 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import Box from "@mui/material/Box";
+import AlbumIcon from "@mui/icons-material/Album";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import AddIcon from "@mui/icons-material/Add";
+import LogoutIcon from "@mui/icons-material/Logout";
+import ThemeToggle from "@/components/ThemeToggle";
 import { useAppContainer } from "@/infrastructure/container";
 import { signOut } from "@/application/auth/sign-out";
 
@@ -16,21 +28,36 @@ export default function NavBar() {
   }
 
   return (
-    <header className="sticky top-0 z-10 flex items-center justify-between border-b border-white/10 bg-vinyl-bg/95 px-4 py-3 backdrop-blur">
-      <Link href="/" className="font-semibold text-vinyl-accent">
-        Bergas
-      </Link>
-      <nav className="flex items-center gap-4 text-sm">
-        <Link href="/search" className="text-gray-300 hover:text-vinyl-accent">
-          Buscar por foto
-        </Link>
-        <Link href="/add" className="text-gray-300 hover:text-vinyl-accent">
-          Adicionar
-        </Link>
-        <button onClick={handleSignOut} className="text-gray-500 hover:text-gray-300">
-          Sair
-        </button>
-      </nav>
-    </header>
+    <AppBar position="sticky" color="default" elevation={0} sx={{ borderBottom: 1, borderColor: "divider" }}>
+      <Toolbar>
+        <Button component={Link} href="/" color="primary" startIcon={<AlbumIcon />} sx={{ fontWeight: 600, fontSize: "1.05rem" }}>
+          Bergas
+        </Button>
+        <Box sx={{ flexGrow: 1 }} />
+        <Tooltip title="Buscar por foto">
+          <Button component={Link} href="/search" color="inherit" startIcon={<CameraAltIcon />} sx={{ display: { xs: "none", sm: "inline-flex" } }}>
+            Buscar por foto
+          </Button>
+        </Tooltip>
+        <Tooltip title="Buscar por foto">
+          <IconButton component={Link} href="/search" color="inherit" sx={{ display: { xs: "inline-flex", sm: "none" } }} aria-label="Buscar por foto">
+            <CameraAltIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Adicionar disco">
+          <Button component={Link} href="/add" color="inherit" startIcon={<AddIcon />} sx={{ display: { xs: "none", sm: "inline-flex" } }}>
+            Adicionar
+          </Button>
+        </Tooltip>
+        <Box sx={{ mx: 1 }}>
+          <ThemeToggle />
+        </Box>
+        <Tooltip title="Sair">
+          <IconButton onClick={handleSignOut} color="inherit" aria-label="Sair">
+            <LogoutIcon />
+          </IconButton>
+        </Tooltip>
+      </Toolbar>
+    </AppBar>
   );
 }

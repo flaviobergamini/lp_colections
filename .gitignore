@@ -16,3 +16,8 @@ backend/.venv
 .DS_Store
 Thumbs.db
 .vscode/
+
+# Env files
+.env
+.env.local
+frontend/.env

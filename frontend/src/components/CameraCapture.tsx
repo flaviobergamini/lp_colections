@@ -1,6 +1,11 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
 
 type Props = {
   onSelect: (file: File) => void;
@@ -21,18 +26,29 @@ export default function CameraCapture({ onSelect, label = "Tirar foto" }: Props)
   }
 
   return (
-    <div className="space-y-3">
+    <Stack spacing={2}>
       {previewUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <Box
+          component="img"
           src={previewUrl}
           alt="Pré-visualização"
-          className="mx-auto max-h-72 w-full rounded-xl object-contain bg-black"
+          sx={{ width: "100%", maxHeight: 288, objectFit: "contain", bgcolor: "black", borderRadius: 3 }}
         />
       ) : (
-        <div className="flex h-56 w-full items-center justify-center rounded-xl border-2 border-dashed border-gray-700 text-gray-500">
-          Nenhuma foto selecionada
-        </div>
+        <Box
+          sx={{
+            height: 224,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            border: 2,
+            borderStyle: "dashed",
+            borderColor: "divider",
+            borderRadius: 3,
+          }}
+        >
+          <Typography color="text.secondary">Nenhuma foto selecionada</Typography>
+        </Box>
       )}
 
       <input
@@ -41,16 +57,12 @@ export default function CameraCapture({ onSelect, label = "Tirar foto" }: Props)
         accept="image/*"
         capture="environment"
         onChange={handleChange}
-        className="hidden"
+        hidden
       />
 
-      <button
-        type="button"
-        onClick={() => inputRef.current?.click()}
-        className="w-full rounded-lg bg-vinyl-accent py-2 font-medium text-vinyl-bg"
-      >
+      <Button variant="contained" size="large" startIcon={<CameraAltIcon />} onClick={() => inputRef.current?.click()}>
         {label}
-      </button>
-    </div>
+      </Button>
+    </Stack>
   );
 }

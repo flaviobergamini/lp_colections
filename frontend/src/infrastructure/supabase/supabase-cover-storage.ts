@@ -13,14 +13,14 @@ export class SupabaseCoverStorage implements CoverStorage {
     const { error } = await this.supabase.storage
       .from(BUCKET)
       .upload(path, file, { contentType: file.type });
-    if (error) throw error;
+    if (error) throw new Error(error.message);
 
     return path;
   }
 
   async remove(path: string): Promise<void> {
     const { error } = await this.supabase.storage.from(BUCKET).remove([path]);
-    if (error) throw error;
+    if (error) throw new Error(error.message);
   }
 
   async getSignedUrl(path: string, expiresInSeconds = 3600): Promise<string | null> {

@@ -16,13 +16,13 @@ export class SupabaseRecordRepository implements RecordRepository {
       .from("records")
       .select("*")
       .order("created_at", { ascending: false });
-    if (error) throw error;
+    if (error) throw new Error(error.message);
     return (data ?? []).map(toVinylRecord);
   }
 
   async searchByText(query: string): Promise<VinylRecord[]> {
     const { data, error } = await this.supabase.rpc("search_records", { query });
-    if (error) throw error;
+    if (error) throw new Error(error.message);
     return (data ?? []).map(toVinylRecord);
   }
 
@@ -31,7 +31,7 @@ export class SupabaseRecordRepository implements RecordRepository {
       query_embedding: embedding,
       match_count: limit,
     });
-    if (error) throw error;
+    if (error) throw new Error(error.message);
     return (data ?? []).map(toRecordMatch);
   }
 
@@ -56,7 +56,7 @@ export class SupabaseRecordRepository implements RecordRepository {
       })
       .select("*")
       .single();
-    if (error) throw error;
+    if (error) throw new Error(error.message);
     return toVinylRecord(data);
   }
 
@@ -72,11 +72,11 @@ export class SupabaseRecordRepository implements RecordRepository {
         notes: changes.notes,
       })
       .eq("id", id);
-    if (error) throw error;
+    if (error) throw new Error(error.message);
   }
 
   async remove(id: string): Promise<void> {
     const { error } = await this.supabase.from("records").delete().eq("id", id);
-    if (error) throw error;
+    if (error) throw new Error(error.message);
   }
 }

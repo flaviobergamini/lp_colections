@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import "./globals.css";
+import InitColorSchemeScript from "@mui/material/InitColorSchemeScript";
+import ThemeRegistry from "@/components/ThemeRegistry";
 import SwRegister from "@/components/SwRegister";
 
 export const metadata: Metadata = {
-  title: "Bergas | Coleção de LPs",
+  title: "Berga Records",
   description: "Controle sua coleção de discos de vinil por foto ou texto.",
   manifest: "/manifest.json",
   icons: {
@@ -20,10 +21,13 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR">
-      <body className="min-h-screen bg-vinyl-bg">
-        <SwRegister />
-        {children}
+    <html lang="pt-BR" suppressHydrationWarning>
+      <body>
+        <InitColorSchemeScript attribute="data" defaultMode="system" />
+        <ThemeRegistry>
+          <SwRegister />
+          {children}
+        </ThemeRegistry>
       </body>
     </html>
   );

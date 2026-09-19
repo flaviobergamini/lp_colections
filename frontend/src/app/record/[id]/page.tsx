@@ -2,6 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Container from "@mui/material/Container";
+import Stack from "@mui/material/Stack";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Alert from "@mui/material/Alert";
+import CircularProgress from "@mui/material/CircularProgress";
+import DeleteIcon from "@mui/icons-material/Delete";
+import SaveIcon from "@mui/icons-material/Save";
 import { useAppContainer } from "@/infrastructure/container";
 import { getRecordWithCover } from "@/application/records/get-record";
 import { updateRecord } from "@/application/records/update-record";
@@ -22,20 +32,23 @@ export default function RecordDetailPage() {
 
   useEffect(() => {
     async function load() {
-      const result = await getRecordWithCover(
-        { repository: recordRepository, storage: coverStorage },
-        params.id
-      );
+      try {
+        const result = await getRecordWithCover(
+          { repository: recordRepository, storage: coverStorage },
+          params.id
+        );
 
-      if (!result) {
-        setError("Disco não encontrado.");
+        if (!result) {
+          setError("Disco não encontrado.");
+        } else {
+          setRecord(result.record);
+          setCoverUrl(result.coverUrl);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Erro ao carregar o disco.");
+      } finally {
         setLoading(false);
-        return;
       }
-
-      setRecord(result.record);
-      setCoverUrl(result.coverUrl);
-      setLoading(false);
     }
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -82,99 +95,86 @@ export default function RecordDetailPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen">
+      <>
         <NavBar />
-        <p className="p-4 text-gray-500">Carregando...</p>
-      </main>
+        <Stack sx={{ alignItems: "center", py: 6 }}>
+          <CircularProgress />
+        </Stack>
+      </>
     );
   }
 
   if (!record) {
     return (
-      <main className="min-h-screen">
+      <>
         <NavBar />
-        <p className="p-4 text-red-400">{error}</p>
-      </main>
+        <Container maxWidth="sm" sx={{ py: 3 }}>
+          <Alert severity="error">{error ?? "Disco não encontrado."}</Alert>
+        </Container>
+      </>
     );
   }
 
   return (
-    <main className="min-h-screen pb-16">
+    <>
       <NavBar />
-      <form onSubmit={handleSave} className="mx-auto max-w-xl space-y-4 p-4">
-        {coverUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={coverUrl}
-            alt={record.title}
-            className="mx-auto max-h-72 rounded-xl object-contain bg-black"
-          />
-        )}
+      <Container maxWidth="sm" sx={{ py: 3 }}>
+        <Stack component="form" onSubmit={handleSave} spacing={2.5}>
+          {coverUrl && (
+            <Box
+              component="img"
+              src={coverUrl}
+              alt={record.title}
+              sx={{ width: "100%", maxHeight: 288, objectFit: "contain", bgcolor: "black", borderRadius: 3 }}
+            />
+          )}
 
-        <div className="grid grid-cols-2 gap-3">
-          <input
-            required
-            value={record.artist}
-            onChange={(e) => setRecord({ ...record, artist: e.target.value })}
-            placeholder="Artista"
-            className="col-span-2 rounded-lg border border-gray-700 bg-white px-3 py-2"
-          />
-          <input
-            required
-            value={record.title}
-            onChange={(e) => setRecord({ ...record, title: e.target.value })}
-            placeholder="Título"
-            className="col-span-2 rounded-lg border border-gray-700 bg-white px-3 py-2"
-          />
-          <input
-            value={record.year ?? ""}
-            onChange={(e) =>
-              setRecord({ ...record, year: e.target.value ? Number(e.target.value) : null })
-            }
-            placeholder="Ano"
-            inputMode="numeric"
-            className="rounded-lg border border-gray-700 bg-white px-3 py-2"
-          />
-          <input
-            value={record.label ?? ""}
-            onChange={(e) => setRecord({ ...record, label: e.target.value })}
-            placeholder="Gravadora"
-            className="rounded-lg border border-gray-700 bg-white px-3 py-2"
-          />
-          <input
-            value={record.genre ?? ""}
-            onChange={(e) => setRecord({ ...record, genre: e.target.value })}
-            placeholder="Gênero"
-            className="col-span-2 rounded-lg border border-gray-700 bg-white px-3 py-2"
-          />
-          <textarea
-            value={record.notes ?? ""}
-            onChange={(e) => setRecord({ ...record, notes: e.target.value })}
-            placeholder="Notas"
-            rows={3}
-            className="col-span-2 rounded-lg border border-gray-700 bg-white px-3 py-2"
-          />
-        </div>
+          <Grid container spacing={2}>
+            <Grid size={12}>
+              <TextField label="Artista" required fullWidth value={record.artist} onChange={(e) => setRecord({ ...record, artist: e.target.value })} />
+            </Grid>
+            <Grid size={12}>
+              <TextField label="Título" required fullWidth value={record.title} onChange={(e) => setRecord({ ...record, title: e.target.value })} />
+            </Grid>
+            <Grid size={6}>
+              <TextField
+                label="Ano"
+                fullWidth
+                value={record.year ?? ""}
+                onChange={(e) => setRecord({ ...record, year: e.target.value ? Number(e.target.value) : null })}
+                slotProps={{ htmlInput: { inputMode: "numeric" } }}
+              />
+            </Grid>
+            <Grid size={6}>
+              <TextField label="Gravadora" fullWidth value={record.label ?? ""} onChange={(e) => setRecord({ ...record, label: e.target.value })} />
+            </Grid>
+            <Grid size={12}>
+              <TextField label="Gênero" fullWidth value={record.genre ?? ""} onChange={(e) => setRecord({ ...record, genre: e.target.value })} />
+            </Grid>
+            <Grid size={12}>
+              <TextField
+                label="Notas"
+                fullWidth
+                multiline
+                minRows={3}
+                value={record.notes ?? ""}
+                onChange={(e) => setRecord({ ...record, notes: e.target.value })}
+              />
+            </Grid>
+          </Grid>
 
-        {error && <p className="text-sm text-red-400">{error}</p>}
+          {error && <Alert severity="error">{error}</Alert>}
 
-        <div className="flex gap-3">
-          <button
-            type="submit"
-            disabled={saving}
-            className="flex-1 rounded-lg bg-vinyl-accent py-2 font-medium text-vinyl-bg disabled:opacity-60"
-          >
-            {saving ? "Salvando..." : "Salvar alterações"}
-          </button>
-          <button
-            type="button"
-            onClick={handleDelete}
-            className="rounded-lg border border-red-500 px-4 py-2 text-red-400"
-          >
-            Remover
-          </button>
-        </div>
-      </form>
-    </main>
+          <Stack direction="row" spacing={2}>
+            <Button type="submit" variant="contained" size="large" startIcon={<SaveIcon />} disabled={saving} sx={{ flex: 1 }}>
+              {saving ? "Salvando..." : "Salvar alterações"}
+            </Button>
+            <Button color="error" variant="outlined" startIcon={<DeleteIcon />} onClick={handleDelete}>
+              Remover
+            </Button>
+          </Stack>
+        </Stack>
+      </Container>
+    </>
   );
 }

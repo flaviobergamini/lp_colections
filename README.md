@@ -3,7 +3,7 @@
 Web app (PWA) para catalogar sua coleção de discos de vinil por foto, e checar
 por foto se você já tem um disco antes de comprá-lo de novo.
 
-- **Frontend:** Next.js 16 (App Router, TypeScript, Tailwind), PWA instalável.
+- **Frontend:** Next.js 16 (App Router, TypeScript, Material UI), PWA instalável.
 - **Backend:** Python (FastAPI) gerando embeddings de imagem com CLIP (open-clip),
   usado só para a busca por foto.
 - **Dados:** Supabase (Postgres + pgvector para similaridade de imagem, Storage
@@ -134,7 +134,7 @@ sem reescrever a UI.
 
 ```
 backend/          FastAPI + CLIP em Clean Architecture (ver Arquitetura acima)
-frontend/         Next.js App Router + Tailwind + PWA, também em Clean Architecture
+frontend/         Next.js App Router + Material UI + PWA, também em Clean Architecture
 supabase/         Migrations SQL (schema, pgvector, RLS, RPCs)
 docker/           supervisord.conf usado pelo Dockerfile
 Dockerfile        Build único: frontend + backend no mesmo container

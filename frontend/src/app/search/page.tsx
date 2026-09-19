@@ -1,6 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Container from "@mui/material/Container";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import Alert from "@mui/material/Alert";
+import LinearProgress from "@mui/material/LinearProgress";
 import { useAppContainer } from "@/infrastructure/container";
 import { searchRecordsByPhoto, type MatchConfidence } from "@/application/records/search-records-by-photo";
 import CameraCapture from "@/components/CameraCapture";
@@ -34,50 +39,44 @@ export default function SearchByPhotoPage() {
   }
 
   return (
-    <main className="min-h-screen pb-16">
+    <>
       <NavBar />
-      <div className="mx-auto max-w-xl space-y-4 p-4">
-        <h1 className="text-lg font-semibold text-vinyl-accent">
-          Já tenho esse disco?
-        </h1>
-        <p className="text-sm text-gray-400">
-          Tire uma foto da capa na loja e veja se ela já está na sua coleção.
-        </p>
+      <Container maxWidth="sm" sx={{ py: 3 }}>
+        <Stack spacing={2.5}>
+          <Typography variant="h6" color="primary">
+            Já tenho esse disco?
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Tire uma foto da capa na loja e veja se ela já está na sua coleção.
+          </Typography>
 
-        <CameraCapture onSelect={handleSelect} label="Fotografar disco" />
+          <CameraCapture onSelect={handleSelect} label="Fotografar disco" />
 
-        {loading && <p className="text-sm text-gray-500">Comparando com sua coleção...</p>}
-        {error && <p className="text-sm text-red-400">{error}</p>}
+          {loading && <LinearProgress />}
+          {error && <Alert severity="error">{error}</Alert>}
 
-        {matches && (
-          <div className="space-y-3">
-            {confidence === "high" && (
-              <p className="rounded-lg bg-green-900/40 p-3 text-green-300">
-                Você provavelmente já tem esse disco.
-              </p>
-            )}
-            {confidence === "maybe" && (
-              <p className="rounded-lg bg-yellow-900/40 p-3 text-yellow-300">
-                Encontramos uma capa parecida. Confira antes de comprar de novo.
-              </p>
-            )}
-            {confidence === "none" && (
-              <p className="rounded-lg bg-vinyl-surface p-3 text-gray-300">
-                Não encontramos esse disco na sua coleção.
-              </p>
-            )}
+          {matches && (
+            <Stack spacing={2}>
+              {confidence === "high" && <Alert severity="success">Você provavelmente já tem esse disco.</Alert>}
+              {confidence === "maybe" && (
+                <Alert severity="warning">Encontramos uma capa parecida. Confira antes de comprar de novo.</Alert>
+              )}
+              {confidence === "none" && <Alert severity="info">Não encontramos esse disco na sua coleção.</Alert>}
 
-            {matches.length > 0 && (
-              <div className="space-y-2">
-                <p className="text-xs uppercase text-gray-500">Mais parecidos</p>
-                {matches.map((match) => (
-                  <MatchCard key={match.id} match={match} />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </main>
+              {matches.length > 0 && (
+                <Stack spacing={1}>
+                  <Typography variant="overline" color="text.secondary">
+                    Mais parecidos
+                  </Typography>
+                  {matches.map((match) => (
+                    <MatchCard key={match.id} match={match} />
+                  ))}
+                </Stack>
+              )}
+            </Stack>
+          )}
+        </Stack>
+      </Container>
+    </>
   );
 }

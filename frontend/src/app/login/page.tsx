@@ -2,6 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Box from "@mui/material/Box";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Alert from "@mui/material/Alert";
+import AlbumIcon from "@mui/icons-material/Album";
+import ThemeToggle from "@/components/ThemeToggle";
 import { useAppContainer } from "@/infrastructure/container";
 import { signIn } from "@/application/auth/sign-in";
 import { signUp } from "@/application/auth/sign-up";
@@ -45,60 +54,44 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center p-6">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-sm space-y-4 rounded-2xl bg-vinyl-surface p-6 shadow-xl"
-      >
-        <h1 className="text-xl font-semibold text-vinyl-accent">
-          Coleção de LPs
-        </h1>
-        <p className="text-sm text-gray-400">
-          {mode === "signin" ? "Entre para acessar sua coleção." : "Crie sua conta."}
-        </p>
+    <Box sx={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", p: 3, position: "relative" }}>
+      <Box sx={{ position: "absolute", top: 16, right: 16 }}>
+        <ThemeToggle />
+      </Box>
+      <Paper component="form" onSubmit={handleSubmit} elevation={4} sx={{ width: "100%", maxWidth: 400, p: 4 }}>
+        <Stack spacing={2.5}>
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+            <AlbumIcon color="primary" fontSize="large" />
+            <Typography variant="h5" color="primary" sx={{ fontWeight: 600 }}>
+              Berga Records
+            </Typography>
+          </Stack>
+          <Typography variant="body2" color="text.secondary">
+            {mode === "signin" ? "Entre para acessar sua coleção." : "Crie sua conta."}
+          </Typography>
 
-        <div className="space-y-2">
-          <label className="block text-sm text-gray-300">E-mail</label>
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-lg border border-gray-700 bg-white px-3 py-2"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="block text-sm text-gray-300">Senha</label>
-          <input
+          <TextField label="E-mail" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} fullWidth />
+          <TextField
+            label="Senha"
             type="password"
             required
-            minLength={6}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-lg border border-gray-700 bg-white px-3 py-2"
+            slotProps={{ htmlInput: { minLength: 6 } }}
+            fullWidth
           />
-        </div>
 
-        {error && <p className="text-sm text-red-400">{error}</p>}
-        {info && <p className="text-sm text-green-400">{info}</p>}
+          {error && <Alert severity="error">{error}</Alert>}
+          {info && <Alert severity="success">{info}</Alert>}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-lg bg-vinyl-accent py-2 font-medium text-vinyl-bg disabled:opacity-60"
-        >
-          {loading ? "Aguarde..." : mode === "signin" ? "Entrar" : "Criar conta"}
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-          className="w-full text-sm text-gray-400 underline"
-        >
-          {mode === "signin" ? "Não tem conta? Criar uma" : "Já tenho conta"}
-        </button>
-      </form>
-    </main>
+          <Button type="submit" variant="contained" size="large" disabled={loading}>
+            {loading ? "Aguarde..." : mode === "signin" ? "Entrar" : "Criar conta"}
+          </Button>
+          <Button onClick={() => setMode(mode === "signin" ? "signup" : "signin")} color="inherit" size="small">
+            {mode === "signin" ? "Não tem conta? Criar uma" : "Já tenho conta"}
+          </Button>
+        </Stack>
+      </Paper>
+    </Box>
   );
 }

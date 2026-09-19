@@ -2,6 +2,18 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Container from "@mui/material/Container";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import CircularProgress from "@mui/material/CircularProgress";
+import Alert from "@mui/material/Alert";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Fab from "@mui/material/Fab";
+import SearchIcon from "@mui/icons-material/Search";
+import AddIcon from "@mui/icons-material/Add";
 import { useAppContainer } from "@/infrastructure/container";
 import { listRecords } from "@/application/records/list-records";
 import { searchRecordsByText } from "@/application/records/search-records-by-text";
@@ -37,44 +49,52 @@ export default function HomePage() {
   }, [query]);
 
   return (
-    <main className="min-h-screen pb-24">
+    <>
       <NavBar />
+      <Container maxWidth="sm" sx={{ py: 3, pb: 12 }}>
+        <Stack spacing={2}>
+          <TextField
+            type="search"
+            placeholder="Buscar por artista, título, gravadora..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            fullWidth
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
 
-      <div className="mx-auto max-w-2xl space-y-4 p-4">
-        <input
-          type="search"
-          placeholder="Buscar por artista, título, gravadora..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="w-full rounded-lg border border-gray-700 bg-white px-3 py-2"
-        />
+          {loading && (
+            <Stack sx={{ alignItems: "center", py: 2 }}>
+              <CircularProgress size={28} />
+            </Stack>
+          )}
+          {error && <Alert severity="error">{error}</Alert>}
 
-        {loading && <p className="text-sm text-gray-500">Carregando...</p>}
-        {error && <p className="text-sm text-red-400">{error}</p>}
+          {!loading && !error && records.length === 0 && (
+            <Paper sx={{ p: 4, textAlign: "center" }}>
+              <Typography color="text.secondary">Nenhum disco encontrado.</Typography>
+              <Button component={Link} href="/add" sx={{ mt: 1 }}>
+                Adicionar o primeiro disco
+              </Button>
+            </Paper>
+          )}
 
-        {!loading && !error && records.length === 0 && (
-          <div className="rounded-xl bg-vinyl-surface p-6 text-center text-gray-400">
-            <p>Nenhum disco encontrado.</p>
-            <Link href="/add" className="mt-2 inline-block text-vinyl-accent underline">
-              Adicionar o primeiro disco
-            </Link>
-          </div>
-        )}
-
-        <div className="space-y-2">
           {records.map((record) => (
             <RecordCard key={record.id} record={record} />
           ))}
-        </div>
-      </div>
+        </Stack>
+      </Container>
 
-      <Link
-        href="/add"
-        className="fixed bottom-6 right-6 flex h-14 w-14 items-center justify-center rounded-full bg-vinyl-accent text-2xl font-bold text-vinyl-bg shadow-lg"
-        aria-label="Adicionar disco"
-      >
-        +
-      </Link>
-    </main>
+      <Fab component={Link} href="/add" color="primary" aria-label="Adicionar disco" sx={{ position: "fixed", bottom: 24, right: 24 }}>
+        <AddIcon />
+      </Fab>
+    </>
   );
 }
