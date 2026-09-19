@@ -21,7 +21,7 @@ RUN pip3 install --no-cache-dir --break-system-packages -r backend/requirements.
 COPY backend/app ./backend/app
 
 # Baixa os pesos do CLIP no build: o startup não depende de rede e fica bem mais rápido.
-RUN cd backend && python3 -c "from app.infrastructure.clip_image_embedder import ClipImageEmbedder; ClipImageEmbedder()"
+RUN cd backend && python3 -c "from app.config import settings; from app.infrastructure.clip_image_embedder import ClipImageEmbedder; ClipImageEmbedder(settings.model_repo, settings.model_file)"
 
 # --- Frontend Next.js ---
 COPY frontend/package.json frontend/package-lock.json* ./frontend/

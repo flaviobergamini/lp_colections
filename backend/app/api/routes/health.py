@@ -8,4 +8,4 @@ router = APIRouter()
 
 @router.get("/health", response_model=HealthResponse)
 async def health():
-    return HealthResponse(status="ok", model=settings.model_name)
+    return HealthResponse(status="ok", model=settings.model_repo)

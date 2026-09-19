@@ -15,8 +15,8 @@ logger = logging.getLogger("uvicorn.error")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Raiz de composição: só aqui infraestrutura (CLIP) e casos de uso se conhecem.
-    logger.info("Carregando modelo CLIP (%s / %s)...", settings.model_name, settings.pretrained)
-    embedder = ClipImageEmbedder(model_name=settings.model_name, pretrained=settings.pretrained)
+    logger.info("Carregando modelo CLIP (%s)...", settings.model_repo)
+    embedder = ClipImageEmbedder(settings.model_repo, settings.model_file)
     app.state.generate_embedding_use_case = GenerateImageEmbedding(embedder)
     logger.info("Modelo CLIP carregado.")
     yield
